@@ -15,3 +15,7 @@ The plots in current version are:
 To solve:
 1. Avoid the for loops
 2. Better plot
+3. Better structure
+
+Example:
+1. Run problem_J2.py
