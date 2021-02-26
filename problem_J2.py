@@ -14,7 +14,6 @@ node = np.loadtxt("nodeHole.txt", comments='#', delimiter=",", unpack=False)
 elemnode = np.loadtxt("meshHole.txt", delimiter=",", unpack=False, dtype="int")
 elemnode = elemnode - 1
 
-
 ## several parameters
 L = np.max(node[:,0])               # length of the geometry
 W = np.max(node[:,1])               # width of the geometry
@@ -85,10 +84,8 @@ while u[step] < L/50:                     # Mainloop. We load in xx steps
     Q = Q + np.expand_dims(dQ, axis=1)
     step += 1
 
-plt.figure()
-
 # FEM curve
-
+plt.figure()
 plt.plot(u/L,f/(t*W)/s0,'bo-')
 plt.xlabel('u/L')
 plt.ylabel('[f/Wt]/s0')
