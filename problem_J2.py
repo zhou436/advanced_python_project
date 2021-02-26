@@ -1,18 +1,15 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.tri as tri
+# import calfem.vis as cfv
 
 # local
 from constitutive_matrix import constitutive_matrix
 from plane_iso4ke import plane_iso4ke
 from solveq import solveq
 from plane_iso4s import plane_iso4s
-from plot_figure import *
 
 ## load the gemoetry and mesh
-# [node,elemnode]=meshhole;
-# node = np.zeros([100,3])
-# elemnode = np.zeros([100,3])
 node = np.loadtxt("nodeHole.txt", comments='#', delimiter=",", unpack=False)
 elemnode = np.loadtxt("meshHole.txt", delimiter=",", unpack=False, dtype="int")
 elemnode = elemnode - 1
@@ -22,7 +19,7 @@ elemnode = elemnode - 1
 L = np.max(node[:,0])               # length of the geometry
 W = np.max(node[:,1])               # width of the geometry
 t = 1e-3                            # thickness of the geometry
-du = 0.2e-4                         # incremental displacement load
+du = 0.2e-3                         # incremental displacement load
 u = [0]                              # total displacement
 f = [0]                              # total force
 
@@ -84,17 +81,34 @@ while u[step] < L/50:                     # Mainloop. We load in xx steps
 
     u.append(u[step]+np.mean(dU[b3x]))
     f.append(np.sum(dQ[b3x]))
-    U = U + dU
-    Q = Q + dQ
+    U = U + np.expand_dims(dU, axis=1)
+    Q = Q + np.expand_dims(dQ, axis=1)
     step += 1
 
 plt.figure()
 
-# FEM data
+# FEM curve
 
 plt.plot(u/L,f/(t*W)/s0,'bo-')
 plt.xlabel('u/L')
 plt.ylabel('[f/Wt]/s0')
 plt.show(block=False)
-plt.show()
+plt.title('Strain-Stress Curve')
+# FEM deformation
 
+fig, (ax0, ax1) = plt.subplots(nrows=2,figsize=(8,8))
+x = np.expand_dims(node[:,0], axis=1)
+y = np.expand_dims(node[:,1], axis=1)
+ax0.scatter(x, y)
+ax0.set_title('Original Geometry')
+scale_factor = 6
+x_expand = np.expand_dims(node[:,0], axis=1) + U[0:-1:2]*scale_factor
+y_expand = np.expand_dims(node[:,1], axis=1) + U[1::2]*scale_factor
+ax1.scatter(x_expand, y_expand)
+ax1.set_title('Deformed Geometry')
+# plt.axis('equal')
+ax0.set_xlim([-0.005,0.070])
+ax0.set_ylim([-0.005,0.025])
+ax1.set_xlim([-0.005,0.070])
+ax1.set_ylim([-0.005,0.025])
+plt.show()
